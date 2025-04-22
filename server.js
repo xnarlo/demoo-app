@@ -15,9 +15,9 @@ const callRoutes = require("./routes/callRoutes");
 const db = require("./db");
 const { ensureAuthenticated } = require("./middleware/authMiddleware");
 
-// 📡 Serial initialization (Arduino) with socket.io attach
+// 📡 Serial initialization (Arduino) with WebSocket
 const { attachSocket } = require("./serial/serial");
-attachSocket(httpServer); // ✅ Attach socket.io to HTTP server
+attachSocket(httpServer); // Attach socket.io
 
 // 📂 Middleware
 app.use(express.static("public"));
@@ -25,21 +25,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(session({
-  secret: "secret-key", // 🔐 Move to .env in production
+  secret: "secret-key", // 🔐 Replace with process.env.SECRET in production
   resave: false,
   saveUninitialized: true
 }));
+
+// 📤 Make session available in all EJS views
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
 
 // 🎨 View Engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// 🛣️ Registered Routes
+// 🛣️ Routes
 app.use("/", authRoutes);   // /login, /logout
 app.use("/", smsRoutes);    // /send-sms, /textclient-pass, /textclient
 app.use("/", callRoutes);   // /callclient, /call, /endcall
 
-// 📄 Pickup Notification
+// 📝 Pickup Notification
 app.get("/pickup", ensureAuthenticated, (req, res) => {
   res.render("pickup");
 });
@@ -54,7 +60,7 @@ app.get("/pickup-search", ensureAuthenticated, (req, res) => {
   });
 });
 
-// 📤 Text Client Message Sender
+// 💬 Text Client
 app.get("/textclient", ensureAuthenticated, (req, res) => {
   const number = req.session.number;
   const message = req.session.message;
@@ -93,7 +99,7 @@ app.get("/forfeiture-search", ensureAuthenticated, (req, res) => {
   });
 });
 
-// 🧾 Quotation Notification
+// 📄 Quotation Notification
 app.get("/quotation", ensureAuthenticated, (req, res) => {
   res.render("quotation");
 });
@@ -110,6 +116,54 @@ app.get("/quotation-search", ensureAuthenticated, (req, res) => {
   });
 });
 
-// 🚀 Start the HTTP server (with WebSocket support)
+
+//SMS Logs 
+
+app.get("/smslogs", ensureAuthenticated, (req, res) => {
+  let limit = parseInt(req.query.limit) || 10;
+  let page = parseInt(req.query.page) || 1;
+
+  // Validate
+  if (![10, 25, 50].includes(limit)) limit = 10;
+  if (page < 1) page = 1;
+
+  const offset = (page - 1) * limit;
+
+  // First, count total entries
+  const countQuery = `SELECT COUNT(*) AS total FROM saved_messages`;
+  db.query(countQuery, (countErr, countResult) => {
+    if (countErr) {
+      console.error("❌ Count error:", countErr);
+      return res.render("smslogs", { logs: [], limit, page, totalPages: 1 });
+    }
+
+    const totalRows = countResult[0].total;
+    const totalPages = Math.ceil(totalRows / limit);
+
+    const query = `
+      SELECT * FROM saved_messages
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    db.query(query, [limit, offset], (err, results) => {
+      if (err) {
+        console.error("❌ Query error:", err);
+        return res.render("smslogs", { logs: [], limit, page, totalPages });
+      }
+
+      res.render("smslogs", {
+        logs: results,
+        limit,
+        page,
+        totalPages
+      });
+    });
+  });
+});
+
+
+
+// 🚀 Launch server with socket.io support
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

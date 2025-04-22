@@ -1,0 +1,16 @@
+<!-- views/partials/navbar.ejs -->
+<nav>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/">Guide</a>
+      <a href="/">About</a>
+ 
+    </div>
+  
+    <% if (session && session.user) { %>
+      <div class="nav-user">
+        <strong><%= session.user.full_name %></strong> | <a href="/logout">Logout</a>
+      </div>
+    <% } %>
+  </nav>
+  <hr>

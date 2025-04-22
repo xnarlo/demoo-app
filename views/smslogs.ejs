@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SMS Logs</title>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <h2>📑 Sent SMS Log</h2>
+
+  <!-- Entry Limit Selection -->
+  <form method="GET" action="/smslogs">
+    <label for="limit">Show entries:</label>
+    <select name="limit" id="limit" onchange="this.form.submit()">
+      <option value="10" <%= limit === 10 ? "selected" : "" %>>10</option>
+      <option value="25" <%= limit === 25 ? "selected" : "" %>>25</option>
+      <option value="50" <%= limit === 50 ? "selected" : "" %>>50</option>
+    </select>
+    <input type="hidden" name="page" value="<%= page %>">
+  </form>
+
+  <% if (logs.length > 0) { %>
+    <table border="1" cellpadding="5" cellspacing="0" style="margin-top: 1rem;">
+      <thead>
+        <tr>
+          <th>SMS ID</th>
+          <th>Contact Number</th>
+          <th>Message</th>
+          <th>Sender</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach(log => { %>
+          <tr>
+            <td><%= log.id %></td>
+            <td><%= log.contact_number %></td>
+            <td><%= log.message %></td>
+            <td><%= log.sender_full_name || "—" %></td>
+            <td><%= new Date(log.created_at).toLocaleString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div style="margin-top: 1rem;">
+      <% if (page > 1) { %>
+        <a href="/smslogs?page=<%= page - 1 %>&limit=<%= limit %>">⬅️ Previous</a>
+      <% } %>
+
+      <% if (page < totalPages) { %>
+        <% if (page > 1) { %> | <% } %>
+        <a href="/smslogs?page=<%= page + 1 %>&limit=<%= limit %>">Next ➡️</a>
+      <% } %>
+    </div>
+  <% } else { %>
+    <p>No messages found.</p>
+  <% } %>
+</body>
+</html>
