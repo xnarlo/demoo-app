@@ -73,7 +73,7 @@ async function sendSMS(number, message, sender = "System") {
       await new Promise(r => setTimeout(r, 2000));
     }
 
-    // Log to DB
+    // Save message into the database
     db.query("INSERT INTO saved_messages (contact_number, message, sender_full_name) VALUES (?, ?, ?)",
       [number, message, sender],
       (err) => err && console.error("❌ Logging failed:", err));

@@ -26,6 +26,9 @@
             document.getElementById("result").innerHTML = table;
             document.getElementById("contactNumber").value = d.contact_number;
 
+            // Show hidden section
+            document.getElementById("detailsSection").style.display = "block";
+
             if (!document.getElementById("withBalance").checked &&
                 !document.getElementById("withoutBalance").checked) {
               document.getElementById("withoutBalance").checked = true;
@@ -37,6 +40,7 @@
             document.getElementById("result").innerHTML = "";
             document.getElementById("contactNumber").value = "";
             document.getElementById("generatedText").value = "";
+            document.getElementById("detailsSection").style.display = "none";
           }
         });
     }
@@ -95,6 +99,9 @@
           searchSTN();
         }
       });
+
+      // Ensure the hidden section is hidden initially
+      document.getElementById("detailsSection").style.display = "none";
     });
   </script>
 </head>
@@ -107,22 +114,25 @@
 
   <div id="result"></div>
 
-  <h3>Contact Number</h3>
-  <input type="text" id="contactNumber" readonly>
+  <!-- ✅ This section starts hidden -->
+  <div id="detailsSection" style="display: none;">
+    <h3>Contact Number</h3>
+    <input type="text" id="contactNumber" readonly>
 
-  <h3>Message Options</h3>
-  <label><input type="radio" name="balance" id="withoutBalance" onchange="toggleBalanceField()"> Without balance</label>
-  <label><input type="radio" name="balance" id="withBalance" onchange="toggleBalanceField()"> With balance</label>
+    <h3>Message Options</h3>
+    <label><input type="radio" name="balance" id="withoutBalance" onchange="toggleBalanceField()"> Without balance</label>
+    <label><input type="radio" name="balance" id="withBalance" onchange="toggleBalanceField()"> With balance</label>
 
-  <div id="paidContainer" style="display: none;">
-    <label for="amountPaid">Amount Paid:</label>
-    <input type="number" id="amountPaid" oninput="generateMessage()">
+    <div id="paidContainer" style="display: none;">
+      <label for="amountPaid">Amount Paid:</label>
+      <input type="number" id="amountPaid" oninput="generateMessage()">
+    </div>
+
+    <h3>Generated Message</h3>
+    <textarea id="generatedText" rows="4" readonly></textarea>
+
+    <br><br>
+    <button onclick="saveMessage()">Text Client</button>
   </div>
-
-  <h3>Generated Message</h3>
-  <textarea id="generatedText" rows="4" readonly></textarea>
-
-  <br><br>
-  <button onclick="saveMessage()">Text Client</button>
 </body>
 </html>
