@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Call Client</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+
+  <h2>📞 Call Client</h2>
+  <p>Enter number starting with +63 or 09</p>
+
+  <form id="makeCallForm">
+    <input type="text" name="number" placeholder="Enter Phone Number" required>
+    <button type="submit">Make Call</button>
+  </form>
+
+  <form id="endCallForm" style="margin-top: 1em;">
+    <button type="submit">End Call</button>
+  </form>
+
+  <script>
+    const socket = io();
+
+    socket.on('call_status', (status) => {
+      if (status === "CALL_STARTED") {
+        alert("✅ Call Initiated!");
+      } else if (status === "CALL_ENDED") {
+        alert("📞 Call Ended!");
+      }
+    });
+
+    document.getElementById('makeCallForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const number = this.number.value.trim();
+      if (!number) {
+        alert("Please enter a number.");
+        return;
+      }
+
+      fetch('/call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `number=${encodeURIComponent(number)}`
+      })
+        .then(res => res.text())
+        .then(console.log)
+        .catch(err => alert("❌ Failed to send call command"));
+    });
+
+    document.getElementById('endCallForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      fetch('/endcall', { method: 'POST' })
+        .then(res => res.text())
+        .then(console.log)
+        .catch(err => alert("❌ Failed to send end call command"));
+    });
+  </script>
+</body>
+</html>

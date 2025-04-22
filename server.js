@@ -3,17 +3,21 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
+const http = require("http");
 
 const app = express();
+const httpServer = http.createServer(app); // Required for socket.io
 
 // 📦 Routes and DB
 const smsRoutes = require("./routes/smsRoutes");
 const authRoutes = require("./routes/authRoutes");
+const callRoutes = require("./routes/callRoutes");
 const db = require("./db");
 const { ensureAuthenticated } = require("./middleware/authMiddleware");
 
-// 📡 Serial initialization (Arduino)
-require("./serial/serial");
+// 📡 Serial initialization (Arduino) with socket.io attach
+const { attachSocket } = require("./serial/serial");
+attachSocket(httpServer); // ✅ Attach socket.io to HTTP server
 
 // 📂 Middleware
 app.use(express.static("public"));
@@ -21,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(session({
-  secret: "secret-key", // 🔐 For security, move this to .env in production
+  secret: "secret-key", // 🔐 Move to .env in production
   resave: false,
   saveUninitialized: true
 }));
@@ -30,29 +34,27 @@ app.use(session({
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// 🛣️ Routes
-app.use("/", authRoutes);  // /login, /logout
-app.use("/", smsRoutes);   // /send-sms, /textclient-pass, /textclient
+// 🛣️ Registered Routes
+app.use("/", authRoutes);   // /login, /logout
+app.use("/", smsRoutes);    // /send-sms, /textclient-pass, /textclient
+app.use("/", callRoutes);   // /callclient, /call, /endcall
 
-// 📝 Page: Pickup Notification Generator
+// 📄 Pickup Notification
 app.get("/pickup", ensureAuthenticated, (req, res) => {
   res.render("pickup");
 });
 
-// 🔍 AJAX: Pickup STN Search
 app.get("/pickup-search", ensureAuthenticated, (req, res) => {
   const { stn } = req.query;
   if (!stn) return res.json({ success: false });
 
   db.query("SELECT * FROM jo_database WHERE stn = ?", [stn], (err, results) => {
-    if (err || results.length === 0) {
-      return res.json({ success: false });
-    }
+    if (err || results.length === 0) return res.json({ success: false });
     res.json({ success: true, details: results[0] });
   });
 });
 
-// 📤 Page: Text Client SMS Sender (Corrected)
+// 📤 Text Client Message Sender
 app.get("/textclient", ensureAuthenticated, (req, res) => {
   const number = req.session.number;
   const message = req.session.message;
@@ -69,32 +71,45 @@ app.get("/textclient", ensureAuthenticated, (req, res) => {
     fullName
   });
 
-  // ✅ Clear the session only AFTER rendering
   req.session.number = null;
   req.session.message = null;
   req.session.save();
 });
 
-
-// 📛 Page: Forfeiture Notification Generator
+// 📛 Forfeiture Notification
 app.get("/forfeiture", ensureAuthenticated, (req, res) => {
   res.render("forfeiture");
 });
 
-// 🔍 AJAX: Forfeiture STN Search
 app.get("/forfeiture-search", ensureAuthenticated, (req, res) => {
   const { stn } = req.query;
   if (!stn) return res.json({ success: false });
 
   db.query("SELECT * FROM jo_database WHERE stn = ?", [stn], (err, results) => {
-    if (err || results.length === 0) {
+    if (err || results.length === 0)
       return res.json({ success: false, message: "No matching data found." });
-    }
 
     res.json({ success: true, details: results[0] });
   });
 });
 
-// 🚀 Start the server
+// 🧾 Quotation Notification
+app.get("/quotation", ensureAuthenticated, (req, res) => {
+  res.render("quotation");
+});
+
+app.get("/quotation-search", ensureAuthenticated, (req, res) => {
+  const { stn } = req.query;
+  if (!stn) return res.json({ success: false });
+
+  db.query("SELECT * FROM jo_database WHERE stn = ?", [stn], (err, results) => {
+    if (err || results.length === 0)
+      return res.json({ success: false, message: "No matching data found." });
+
+    res.json({ success: true, details: results[0] });
+  });
+});
+
+// 🚀 Start the HTTP server (with WebSocket support)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
