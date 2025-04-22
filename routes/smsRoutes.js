@@ -2,53 +2,26 @@ const express = require("express");
 const router = express.Router();
 const { sendSMS } = require("../util/sendSMS");
 
-// ✅ POST: Receive number and message from pickup.ejs
+// ✅ POST: Receive number and message from another view (e.g., pickup, forfeiture)
 router.post("/textclient-pass", (req, res) => {
   const { number, message } = req.body;
-
   req.session.number = number;
   req.session.message = message;
 
-  console.log("✅ Received in /textclient-pass:");
+  console.log("✅ Session set in /textclient-pass:");
   console.log("   - number:", number);
   console.log("   - message:", message);
 
   req.session.save((err) => {
     if (err) {
-      console.error("❌ Error saving session:", err);
-      return res.redirect("/pickup");
+      console.error("❌ Session save error:", err);
+      return res.redirect("back"); // fallback to referring page
     }
-    console.log("✅ Session saved. Redirecting to /textclient");
     res.redirect("/textclient");
   });
 });
 
-// ✅ GET: View that loads message + number from session into form
-router.get("/textclient", (req, res) => {
-  const number = req.session.number;
-  const message = req.session.message;
-  const fullName = req.session.user?.full_name || "Guest";
-
-  console.log("🧪 Rendering /textclient with session:");
-  console.log("   - number:", number);
-  console.log("   - message:", message);
-  console.log("   - fullName:", fullName);
-
-  res.render("textclient", {
-    number: number || "",
-    message: message || "",
-    fullName
-  });
-
-  // ✅ Delay clearing until after response is sent
-  // req.session.number = null;
-  // req.session.message = null;
-
-  req.session.save(); // trigger session store update safely
-});
-
-
-// ✅ POST: Send SMS (called by textclient.ejs)
+// ✅ POST: Send SMS via Arduino + log to database
 router.post("/send-sms", async (req, res) => {
   const { number, message } = req.body;
   const sender = req.session.user?.full_name || "Anonymous";
@@ -64,6 +37,7 @@ router.post("/send-sms", async (req, res) => {
 
     res.json({ status: statusMsg });
   } catch (err) {
+    console.error("❌ sendSMS failed:", err);
     res.json({ status: `❌ ${err.message}` });
   }
 });
