@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pick-up Notification</title>
+  <script>
+    function searchSTN() {
+      const stn = document.getElementById("stnInput").value.trim();
+      if (!stn) return;
+
+      fetch(`/pickup-search?stn=${stn}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const d = data.details;
+            const table = `
+              <table border="1">
+                <tr><th>Client Name</th><td>${d.client_name}</td></tr>
+                <tr><th>Contact Person</th><td>${d.contact_person}</td></tr>
+                <tr><th>Contact Number</th><td id="contact">${d.contact_number}</td></tr>
+                <tr><th>SS Number</th><td id="ss">${d.ss_number}</td></tr>
+                <tr><th>Model</th><td id="model">${d.model_number}</td></tr>
+                <tr><th>Serial</th><td id="serial">${d.serial_number}</td></tr>
+                <tr><th>Quotation Price</th><td id="price">${d.quotation_price}</td></tr>
+              </table>`;
+            document.getElementById("result").innerHTML = table;
+            document.getElementById("contactNumber").value = d.contact_number;
+
+            if (!document.getElementById("withBalance").checked &&
+                !document.getElementById("withoutBalance").checked) {
+              document.getElementById("withoutBalance").checked = true;
+            }
+
+            generateMessage();
+          } else {
+            alert("❌ No record found.");
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("contactNumber").value = "";
+            document.getElementById("generatedText").value = "";
+          }
+        });
+    }
+
+    function toggleBalanceField() {
+      const balanceInput = document.getElementById("paidContainer");
+      balanceInput.style.display = document.getElementById("withBalance").checked ? "block" : "none";
+      document.getElementById("amountPaid").value = "";
+      generateMessage();
+    }
+
+    function generateMessage() {
+      const model = document.getElementById("model")?.innerText || "";
+      const serial = document.getElementById("serial")?.innerText || "";
+      const ss = document.getElementById("ss")?.innerText || "";
+      const price = parseFloat(document.getElementById("price")?.innerText) || 0;
+      const paid = parseFloat(document.getElementById("amountPaid").value) || 0;
+
+      let message = `This is a generated message, do not reply. The ${model} under SS number ${ss} with serial number: ${serial}, is ready for pickup.`;
+      if (document.getElementById("withBalance").checked) {
+        const balance = price - paid;
+        message += ` A balance of Php ${balance.toFixed(2)} should be paid before the release.`;
+      }
+      message += ` For further questions, please contact our Helpdesk team.`;
+
+      document.getElementById("generatedText").value = message;
+    }
+
+    function saveMessage() {
+      const contactNumber = document.getElementById("contactNumber").value;
+      const message = document.getElementById("generatedText").value;
+
+      if (!contactNumber || !message) {
+        alert("⚠️ Contact number and message cannot be empty.");
+        return;
+      }
+
+      fetch("/textclient-pass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number: contactNumber, message })
+      })
+      .then(() => {
+        window.location.href = "/textclient";
+      })
+      .catch(err => {
+        console.error("❌ Error passing data:", err);
+        alert("Failed to continue to text client.");
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("stnInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          searchSTN();
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>🔍 Pick-up SMS Generator</h2>
+
+  <label>Enter STN:</label>
+  <input type="text" id="stnInput" placeholder="STN">
+  <button onclick="searchSTN()">Search</button>
+
+  <div id="result"></div>
+
+  <h3>Contact Number</h3>
+  <input type="text" id="contactNumber" readonly>
+
+  <h3>Message Options</h3>
+  <label><input type="radio" name="balance" id="withoutBalance" onchange="toggleBalanceField()"> Without balance</label>
+  <label><input type="radio" name="balance" id="withBalance" onchange="toggleBalanceField()"> With balance</label>
+
+  <div id="paidContainer" style="display: none;">
+    <label for="amountPaid">Amount Paid:</label>
+    <input type="number" id="amountPaid" oninput="generateMessage()">
+  </div>
+
+  <h3>Generated Message</h3>
+  <textarea id="generatedText" rows="4" readonly></textarea>
+
+  <br><br>
+  <button onclick="saveMessage()">Text Client</button>
+</body>
+</html>

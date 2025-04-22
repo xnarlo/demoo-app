@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Client</title>
+</head>
+<body>
+  <h2>📤 Send SMS</h2>
+
+  <form id="smsForm">
+    <label for="number">📱 Recipient Number:</label><br>
+    <input type="text" id="number" name="number" value="<%= number %>" required><br><br>
+
+    <label for="message">✉️ Message:</label><br>
+    <textarea id="message" name="message" rows="6" cols="50" required><%= message %></textarea><br><br>
+
+    <button type="submit" id="sendBtn">Send SMS</button>
+  </form>
+
+  <script>
+    document.getElementById("smsForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const sendButton = document.getElementById("sendBtn");
+      sendButton.disabled = true;
+      sendButton.textContent = "Sending...";
+
+      const payload = {
+        number: document.getElementById("number").value,
+        message: document.getElementById("message").value
+      };
+
+      try {
+        const response = await fetch("/send-sms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        alert(result.status);
+      } catch (err) {
+        alert("❌ Failed to send SMS.");
+        console.error(err);
+      } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Send SMS";
+      }
+    });
+  </script>
+</body>
+</html>
