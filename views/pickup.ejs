@@ -26,7 +26,6 @@
             document.getElementById("result").innerHTML = table;
             document.getElementById("contactNumber").value = d.contact_number;
 
-            // Show hidden section
             document.getElementById("detailsSection").style.display = "block";
 
             if (!document.getElementById("withBalance").checked &&
@@ -78,18 +77,25 @@
         return;
       }
 
-      fetch("/textclient-pass", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ number: contactNumber, message })
-      })
-      .then(() => {
-        window.location.href = "/textclient";
-      })
-      .catch(err => {
-        console.error("❌ Error passing data:", err);
-        alert("Failed to continue to text client.");
-      });
+      // ✅ Use traditional form submit to prevent session race condition
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/textclient-pass";
+
+      const numberInput = document.createElement("input");
+      numberInput.type = "hidden";
+      numberInput.name = "number";
+      numberInput.value = contactNumber;
+
+      const messageInput = document.createElement("input");
+      messageInput.type = "hidden";
+      messageInput.name = "message";
+      messageInput.value = message;
+
+      form.appendChild(numberInput);
+      form.appendChild(messageInput);
+      document.body.appendChild(form);
+      form.submit();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -100,7 +106,6 @@
         }
       });
 
-      // Ensure the hidden section is hidden initially
       document.getElementById("detailsSection").style.display = "none";
     });
   </script>
@@ -114,7 +119,7 @@
 
   <div id="result"></div>
 
-  <!-- ✅ This section starts hidden -->
+  <!-- Hidden section revealed after successful search -->
   <div id="detailsSection" style="display: none;">
     <h3>Contact Number</h3>
     <input type="text" id="contactNumber" readonly>
