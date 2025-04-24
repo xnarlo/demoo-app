@@ -1,0 +1,8 @@
+Check for script of views and make sure that it is the same with the previous working version
+
+
+Check for issue of forfeition it sends the first part with more than 200 characters
+
+pickup and quotation works okay
+
+for testing and video
