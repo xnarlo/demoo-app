@@ -1,16 +1,21 @@
 <!-- views/partials/navbar.ejs -->
-<nav>
+<nav class="main-navbar">
+  <div class="nav-logo">
+    <img src="/images/no-logo.png" alt="Logo">
+  </div>
+
+  <div class="nav-right">
     <div class="nav-links">
       <a href="/">Home</a>
       <a href="/">Guide</a>
       <a href="/">About</a>
- 
     </div>
-  
+
     <% if (session && session.user) { %>
       <div class="nav-user">
         <strong><%= session.user.full_name %></strong> | <a href="/logout">Logout</a>
       </div>
     <% } %>
-  </nav>
-  <hr>
+  </div>
+</nav>
+<hr>

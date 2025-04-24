@@ -1,0 +1,94 @@
+/* GENERAL RESET & PAGE LAYOUT */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 70px 40px 40px; /* top padding for navbar */
+    background-color: #F9FAFB;
+    color: #161F40;
+}
+
+/* DASHBOARD HEADER */
+h1 {
+    text-align: center;
+    color: #161F40;
+    margin-bottom: 40px;
+}
+
+/* DASHBOARD GRID */
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+/* CARD BASE STYLE */
+.dashboard-card {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* CARD IMAGE */
+.dashboard-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;  /* Instead of 'cover' */
+    background-color: #FFFFFF; /* Optional: prevent transparency from blending */
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 15px;
+}
+
+
+
+/* CARD TITLE */
+.dashboard-card h3 {
+    font-size: 20px;
+    color: #161F40;
+    margin-bottom: 15px;
+}
+
+/* SELECT + BUTTONS */
+.dashboard-card select,
+.dashboard-card button {
+    width: 100%;
+    border: none;
+    border-radius: 25px;
+    padding: 15px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to right, #0066ff, #00bfff);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dashboard-card select {
+    width: 100%;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 40px 15px 20px;  /* extra right padding for arrow */
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #eaeaea;
+    color: #161F40;
+    background-image: none;        /* reset default arrow for consistency */
+    -webkit-appearance: none;      /* remove default browser styles */
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+}
+
+
+.dashboard-card button:hover {
+    opacity: 0.9;
+}

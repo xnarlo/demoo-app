@@ -1,49 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <%- include('./partials/navbar.ejs') %>
+  <%- include('./partials/navbar.ejs') %>
 
+  <h1>Welcome to the Dashboard</h1>
 
-    <h1>Welcome to the Dashboard</h1>
-
+  <div class="dashboard-container">
     <!-- CARD 1 -->
-    <div>
-        <h3>Send a Message</h3>
-        <select onchange="navigateTo(this.value)">
-            <option disabled selected>Select an option</option>
-            <option value="/pickup">Client Pickup Notification</option>
-            <option value="/quotation">Quotation Reminder</option>
-            <option value="/forfeiture">Forfeiture Notice</option>
-            <option value="/textclient">Manually Compose Message</option>
-            <option disabled>──────────</option>
-            <option value="/smslogs">Text Message History</option>
-        </select>
+    <div class="dashboard-card">
+      <img src="/images/wbgsms.jpg" alt="Send a Message">
+      <h3>Send a Message</h3>
+      <select onchange="navigateTo(this.value)">
+        <option disabled selected>Select an option</option>
+        <option value="/pickup">Client Pickup Notification</option>
+        <option value="/quotation">Quotation Reminder</option>
+        <option value="/forfeiture">Forfeiture Notice</option>
+        <option value="/textclient">Manually Compose Message</option>
+        <option disabled>──────────</option>
+        <option value="/smslogs">Text Message History</option>
+      </select>
     </div>
 
     <!-- CARD 2 -->
-    <div>
-        <h3>Call Client</h3>
-        <button onclick="location.href='/callclient'">Call Client</button>
+    <div class="dashboard-card">
+      <img src="/images/wbgcall.jpg" alt="Call Client">
+      <h3>Call Client</h3>
+      <button onclick="location.href='/callclient'">Call Client</button>
     </div>
 
     <!-- CARD 3 -->
-    <div>
-        <h3>System Access</h3>
-        <button onclick="window.open('http://itsdonlinejo.cti-phil.com/itsdsystem/index.php', '_blank')">Open CTI JO System</button>
+    <div class="dashboard-card">
+      <img src="/images/wbghistory.jpg" alt="Job Order System">
+      <h3>CTI JO System</h3>
+      <button onclick="window.open('http://itsdonlinejo.cti-phil.com/itsdsystem/index.php', '_blank')">Open CTI JO System</button>
     </div>
+  </div>
 
-    <script>
-        function navigateTo(path) {
-            if (path) {
-                window.location.href = path;
-            }
-        }
-    </script>
+  <script>
+    function navigateTo(path) {
+      if (path) {
+        window.location.href = path;
+      }
+    }
+  </script>
 
 </body>
 </html>

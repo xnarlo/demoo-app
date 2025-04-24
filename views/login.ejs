@@ -3,26 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
-  <h2>🔐 Login</h2>
 
-  <form method="POST" action="/login">
-    <label for="username">Username:</label>
-    <input type="text" name="username" id="username" required>
+  <!-- Title on Top -->
+  <div class="title">
+    <img src="/images/login-title.png" alt="Title Illustration">
+  </div>
 
-    <br>
+  <!-- Wrapper: Left + Right -->
+  <div class="login-wrapper">
+    <div class="illustration">
+      <img src="/images/login-illustration.png" alt="Login Illustration">
+    </div>
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required>
+    <div class="login-card">
+      <h2>🔐 Login</h2>
+      <% if (typeof error !== 'undefined') { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/login">
+        <input type="text" name="username" id="username" placeholder="Username" required>
+        <input type="password" name="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
 
-    <br>
 
-    <button type="submit">Login</button>
-  </form>
+  <!-- Footer (put this at the end of body) -->
+<div class="footer-fixed">Engr. Neil Aldrin Lolinco - MEP-EE-ICEO.</div>
 
-  <% if (typeof error !== 'undefined') { %>
-    <p style="color: red;"><%= error %></p>
-  <% } %>
 </body>
+
 </html>
