@@ -26,15 +26,18 @@ router.post("/login", (req, res) => {
           full_name: results[0].full_name,
           username: results[0].username
         };
-        res.redirect("/textclient");
+
+        // Redirect to dashboard after login
+        res.redirect("/dashboard");
       } else {
+        // Invalid credentials
         res.render("login", { error: "Invalid username or password." });
       }
     }
   );
 });
 
-// Logout
+// Handle logout
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error("⚠️ Logout error:", err);

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+
+    <%- include('./partials/navbar.ejs') %>
+
+
+    <h1>Welcome to the Dashboard</h1>
+
+    <!-- CARD 1 -->
+    <div>
+        <h3>Send a Message</h3>
+        <select onchange="navigateTo(this.value)">
+            <option disabled selected>Select an option</option>
+            <option value="/pickup">Client Pickup Notification</option>
+            <option value="/quotation">Quotation Reminder</option>
+            <option value="/forfeiture">Forfeiture Notice</option>
+            <option value="/textclient">Manually Compose Message</option>
+            <option disabled>──────────</option>
+            <option value="/smslogs">Text Message History</option>
+        </select>
+    </div>
+
+    <!-- CARD 2 -->
+    <div>
+        <h3>Call Client</h3>
+        <button onclick="location.href='/callclient'">Call Client</button>
+    </div>
+
+    <!-- CARD 3 -->
+    <div>
+        <h3>System Access</h3>
+        <button onclick="window.open('http://itsdonlinejo.cti-phil.com/itsdsystem/index.php', '_blank')">Open CTI JO System</button>
+    </div>
+
+    <script>
+        function navigateTo(path) {
+            if (path) {
+                window.location.href = path;
+            }
+        }
+    </script>
+
+</body>
+</html>

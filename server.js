@@ -40,10 +40,17 @@ app.use((req, res, next) => {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// 🛣️ Routes
+// 🛣️ Auth & Feature Routes
 app.use("/", authRoutes);   // /login, /logout
-app.use("/", smsRoutes);    // /send-sms, /textclient-pass, /textclient
-app.use("/", callRoutes);   // /callclient, /call, /endcall
+app.use("/", ensureAuthenticated, smsRoutes);    // protect SMS routes
+app.use("/", ensureAuthenticated, callRoutes);   // protect Call routes
+
+// 🏠 Dashboard (Landing Page)
+app.get("/", (req, res) => res.redirect("/dashboard"));
+
+app.get("/dashboard", ensureAuthenticated, (req, res) => {
+  res.render("dashboard");
+});
 
 // 📝 Pickup Notification
 app.get("/pickup", ensureAuthenticated, (req, res) => {
@@ -116,9 +123,7 @@ app.get("/quotation-search", ensureAuthenticated, (req, res) => {
   });
 });
 
-
-//SMS Logs 
-
+// 📄 SMS Logs
 app.get("/smslogs", ensureAuthenticated, (req, res) => {
   let limit = parseInt(req.query.limit) || 10;
   let page = parseInt(req.query.page) || 1;
@@ -129,7 +134,6 @@ app.get("/smslogs", ensureAuthenticated, (req, res) => {
 
   const offset = (page - 1) * limit;
 
-  // First, count total entries
   const countQuery = `SELECT COUNT(*) AS total FROM saved_messages`;
   db.query(countQuery, (countErr, countResult) => {
     if (countErr) {
@@ -161,8 +165,6 @@ app.get("/smslogs", ensureAuthenticated, (req, res) => {
     });
   });
 });
-
-
 
 // 🚀 Launch server with socket.io support
 const PORT = process.env.PORT || 3000;
