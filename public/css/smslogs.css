@@ -1,0 +1,102 @@
+/* Base Reset and Typography */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 70px 20px;
+    background-color: #F9FAFB;
+    color: #161F40;
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 30px;
+}
+
+/* Container for log content */
+.logs-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 600;
+}
+
+/* Select dropdown */
+select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    font-size: 15px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background-color: #122A81;
+    color: #FFFFFF;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.pagination a {
+    color: #2E8BC0;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+/* Message fallback */
+p {
+    text-align: center;
+    font-size: 16px;
+    color: #5F7394;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .logs-container {
+        padding: 0 15px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}

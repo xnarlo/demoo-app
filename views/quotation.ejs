@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Quotation SMS Generator</title>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/quotation.css">
+
   <script>
     function searchSTN() {
       const stn = document.getElementById("stnInput").value.trim();
@@ -15,7 +18,7 @@
             const d = data.details;
 
             const table = `
-              <table border="1">
+              <table>
                 <tr><th>Service Tracking Number</th><td>${d.service_tracking_number}</td></tr>
                 <tr><th>Service Slip Number</th><td>${d.ss_number}</td></tr>
                 <tr><th>Client Name</th><td>${d.client_name}</td></tr>
@@ -29,31 +32,25 @@
                 <tr><th>Quotation Received Date</th><td>${d.quotation_received}</td></tr>
                 <tr><th>Quotation Price</th><td>${d.quotation_price}</td></tr>
                 <tr><th>ETA Parts</th><td>${d.eta_parts}</td></tr>
-                <tr><th>Machine Status</th><td>${d.machine_status}</td></tr>
-                <tr><th>Return Receipt Date</th><td>${d.rr_created}</td></tr>
               </table>`;
+
             document.getElementById("result").innerHTML = table;
             document.getElementById("contactNumber").value = d.contact_number;
 
-            document.getElementById("detailsSection").style.display = "block";
+            const message = `This is a generated message, do not reply. The quotation for Service Slip Number ${d.ss_number} has been sent to ${d.email}. Please acknowledge the quotation amounting to Php ${d.quotation_price}. For inquiries, contact Helpdesk.`;
 
-            if (!d.quotation_sent) {
-              alert("⚠️ No Quotation Sent to the Client.");
-              document.getElementById("generatedText").value = "";
-            } else {
-              const message = `This is to inform you that we have sent a quotation for the machine: ${d.model_number} under SS Number ${d.ss_number}. We have sent the quotation in your email address: ${d.email}. Please respond to the email at your earliest convenience. If you have questions or concerns, please contact our Helpdesk team. Globe: 09178306928 Smart: 09399170587 Landline: 87147590 or 92.`;
-              document.getElementById("generatedText").value = message;
-            }
+            document.getElementById("generatedText").value = message;
+            document.getElementById("resultsWrapper").style.display = "flex";
           } else {
             alert(data.message || "No matching data found.");
             document.getElementById("result").innerHTML = "";
             document.getElementById("generatedText").value = "";
-            document.getElementById("detailsSection").style.display = "none";
+            document.getElementById("resultsWrapper").style.display = "none";
           }
         })
         .catch(err => {
-          console.error("❌ Error searching STN:", err);
-          alert("Error fetching STN information.");
+          console.error("❌ Error:", err);
+          alert("Something went wrong while fetching STN details.");
         });
     }
 
@@ -62,7 +59,7 @@
       const message = document.getElementById("generatedText").value;
 
       if (!number || !message) {
-        alert("Contact number and message cannot be empty.");
+        alert("⚠️ Contact number and message cannot be empty.");
         return;
       }
 
@@ -94,28 +91,38 @@
         }
       });
 
-      document.getElementById("detailsSection").style.display = "none";
+      document.getElementById("resultsWrapper").style.display = "none";
     });
   </script>
 </head>
 <body>
-  <h2>🧾 Quotation SMS Generator</h2>
 
-  <label for="stnInput">Enter STN:</label>
-  <input type="text" id="stnInput" placeholder="STN">
-  <button onclick="searchSTN()">Search</button>
+  <%- include('./partials/navbar.ejs') %>
 
-  <div id="result"></div>
+  <div class="pickup-container">
+    <h2>🧾 Quotation SMS Generator</h2>
 
-  <div id="detailsSection" style="display: none;">
-    <h3>Contact Number</h3>
-    <input type="text" id="contactNumber" readonly>
+    <label for="stnInput">Enter STN:</label>
+    <input type="text" id="stnInput" placeholder="STN">
+    <button onclick="searchSTN()">Search</button>
 
-    <h3>Generated Quotation Message</h3>
-    <textarea id="generatedText" rows="4" readonly></textarea>
+    <div class="result-row" id="resultsWrapper" style="display: none;">
+      <!-- LEFT: Info Table -->
+      <div class="result-table" id="result"></div>
 
-    <br><br>
-    <button onclick="passToTextClient()">Text Client</button>
+      <!-- RIGHT: Message Composition -->
+      <div class="message-card" id="detailsSection">
+        <h3>Contact Number</h3>
+        <input type="text" id="contactNumber" readonly>
+
+        <h3>Generated Message</h3>
+        <textarea id="generatedText" rows="7" readonly></textarea>
+
+        <br><br>
+        <button onclick="passToTextClient()">Text Client</button>
+      </div>
+    </div>
   </div>
+
 </body>
 </html>

@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Forfeiture Notification</title>
+
+  <!-- CSS Links -->
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/forfeiture.css">
+
   <script>
     function searchSTN() {
       const stn = document.getElementById("stnInput").value.trim();
@@ -15,14 +20,14 @@
             const d = data.details;
 
             const table = `
-              <table border="1">
+              <table>
                 <tr><th>Service Tracking Number</th><td>${d.service_tracking_number}</td></tr>
                 <tr><th>Service Slip Number</th><td>${d.ss_number}</td></tr>
                 <tr><th>Client Name</th><td>${d.client_name}</td></tr>
                 <tr><th>Contact Person</th><td>${d.contact_person}</td></tr>
                 <tr><th>Contact Number</th><td id="contact">${d.contact_number}</td></tr>
                 <tr><th>Email Address</th><td>${d.email}</td></tr>
-                <tr><th>Model Number</th><td>${d.model_number}</td></tr>
+                <tr><th>Model Number</th><td id="model">${d.model_number}</td></tr>
                 <tr><th>Serial Number</th><td>${d.serial_number}</td></tr>
                 <tr><th>Warranty Status</th><td>${d.warranty_check}</td></tr>
                 <tr><th>Quotation Sent</th><td>${d.quotation_sent}</td></tr>
@@ -30,12 +35,12 @@
                 <tr><th>Quotation Price</th><td>${d.quotation_price}</td></tr>
                 <tr><th>ETA Parts</th><td>${d.eta_parts}</td></tr>
                 <tr><th>Machine Status</th><td>${d.machine_status}</td></tr>
-                <tr><th>Return Receipt Date</th><td>${d.rr_created}</td></tr>
+                <tr><th>Return Receipt Date</th><td id="rr_created">${d.rr_created}</td></tr>
               </table>`;
+
             document.getElementById("result").innerHTML = table;
             document.getElementById("contactNumber").value = d.contact_number;
-
-            document.getElementById("detailsSection").style.display = "block";
+            document.getElementById("resultsWrapper").style.display = "flex";
 
             if (!d.rr_created) {
               alert("No Return Receipt was printed. Manually check the machine’s status.");
@@ -54,7 +59,7 @@
             alert(data.message || "No matching data found.");
             document.getElementById("result").innerHTML = "";
             document.getElementById("generatedText").value = "";
-            document.getElementById("detailsSection").style.display = "none";
+            document.getElementById("resultsWrapper").style.display = "none";
           }
         })
         .catch(err => {
@@ -68,11 +73,10 @@
       const message = document.getElementById("generatedText").value;
 
       if (!number || !message) {
-        alert("Contact number and message cannot be empty.");
+        alert("⚠️ Contact number and message cannot be empty.");
         return;
       }
 
-      // ✅ Create and submit a hidden form instead of using fetch()
       const form = document.createElement("form");
       form.method = "POST";
       form.action = "/textclient-pass";
@@ -101,28 +105,37 @@
         }
       });
 
-      document.getElementById("detailsSection").style.display = "none";
+      document.getElementById("resultsWrapper").style.display = "none";
     });
   </script>
 </head>
 <body>
-  <h2>📛 Forfeiture SMS Generator</h2>
 
-  <label for="stnInput">Enter STN:</label>
-  <input type="text" id="stnInput" placeholder="STN">
-  <button onclick="searchSTN()">Search</button>
+  <%- include('./partials/navbar.ejs') %>
 
-  <div id="result"></div>
+  <div class="pickup-container">
+    <h2>📛 Forfeiture SMS Generator</h2>
 
-  <div id="detailsSection" style="display: none;">
-    <h3>Contact Number</h3>
-    <input type="text" id="contactNumber" readonly>
+    <label for="stnInput">Enter STN:</label>
+    <input type="text" id="stnInput" placeholder="STN">
+    <button onclick="searchSTN()">Search</button>
 
-    <h3>Generated Message</h3>
-    <textarea id="generatedText" rows="4" readonly></textarea>
+    <div class="result-row" id="resultsWrapper" style="display: none;">
+      <!-- LEFT: Info Table -->
+      <div class="result-table" id="result"></div>
 
-    <br><br>
-    <button onclick="passToTextClient()">Text Client</button>
+      <!-- RIGHT: Message Card -->
+      <div class="message-card" id="detailsSection">
+        <h3>Contact Number</h3>
+        <input type="text" id="contactNumber" readonly>
+
+        <h3>Generated Message</h3>
+        <textarea id="generatedText" rows="10" readonly></textarea>
+
+        <br><br>
+        <button onclick="passToTextClient()">Text Client</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>

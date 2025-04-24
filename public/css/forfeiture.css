@@ -100,13 +100,6 @@ button:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
-/* Ensure full width inside message card */
-.message-card input[type="text"],
-.message-card textarea {
-    width: 100%;
-    max-width: 100%;
-}
-
 /* Table Styles */
 table {
     width: 100%;
@@ -129,6 +122,14 @@ table th {
     color: white;
     width: 40%;
 }
+
+/* Ensure full width inside message card */
+.message-card input[type="text"],
+.message-card textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
 
 /* Radio Button Styling */
 input[type="radio"] {

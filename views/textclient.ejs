@@ -3,19 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>Text Client</title>
+
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/pickup.css"> <!-- Reuse for message card style -->
 </head>
 <body>
-  <h2>📤 Send SMS</h2>
 
-  <form id="smsForm">
-    <label for="number">📱 Recipient Number:</label><br>
-    <input type="text" id="number" name="number" value="<%= number %>" required><br><br>
+  <%- include('./partials/navbar.ejs') %>
 
-    <label for="message">✉️ Message:</label><br>
-    <textarea id="message" name="message" rows="6" cols="50" required><%= message %></textarea><br><br>
+  <div class="pickup-container">
+    <h2>📤 Send SMS</h2>
 
-    <button type="submit" id="sendBtn">Send SMS</button>
-  </form>
+    <div class="message-card">
+      <form id="smsForm">
+        <label for="number">📱 Recipient Number:</label>
+        <input type="text" id="number" name="number" value="<%= number %>" required>
+
+        <label for="message">✉️ Message:</label>
+        <textarea id="message" name="message" rows="7" required><%= message %></textarea>
+
+        <br>
+        <button type="submit" id="sendBtn">Send SMS</button>
+      </form>
+    </div>
+  </div>
 
   <script>
     document.getElementById("smsForm").addEventListener("submit", async function (e) {
@@ -48,5 +59,6 @@
       }
     });
   </script>
+
 </body>
 </html>

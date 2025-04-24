@@ -3,22 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Call Client</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/callclient.css"> <!-- Reuse same styles -->
+
+  <!-- Socket.IO -->
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
+  <%- include('./partials/navbar.ejs') %>
 
-  <h2>📞 Call Client</h2>
-  <p>Enter number starting with +63 or 09</p>
+  <div class="pickup-container">
+    <h2>📞 Call Client</h2>
 
-  <form id="makeCallForm">
-    <input type="text" name="number" placeholder="Enter Phone Number" required>
-    <button type="submit">Make Call</button>
-  </form>
+    <div class="message-card">
+      <p style="margin-bottom: 20px;">Enter number starting with +63 or 09</p>
 
-  <form id="endCallForm" style="margin-top: 1em;">
-    <button type="submit">End Call</button>
-  </form>
+      <form id="makeCallForm">
+        <label for="number">Phone Number</label>
+        <input type="text" name="number" id="number" placeholder="Enter Phone Number" required>
+        <button type="submit">Make Call</button>
+      </form>
+
+      <form id="endCallForm" style="margin-top: 20px;">
+        <button type="submit">End Call</button>
+      </form>
+    </div>
+  </div>
 
   <script>
     const socket = io();
@@ -33,7 +46,7 @@
 
     document.getElementById('makeCallForm').addEventListener('submit', function (event) {
       event.preventDefault();
-      const number = this.number.value.trim();
+      const number = document.getElementById("number").value.trim();
       if (!number) {
         alert("Please enter a number.");
         return;
