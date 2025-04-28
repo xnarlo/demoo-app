@@ -6,3 +6,8 @@ Check for issue of forfeition it sends the first part with more than 200 charact
 pickup and quotation works okay
 
 for testing and video
+test for sms routes and sendsms.js
+
+files sent over the webb app is not saving into the database
+
+try to debug and check for await

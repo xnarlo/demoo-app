@@ -57,6 +57,19 @@ app.get("/pickup", ensureAuthenticated, (req, res) => {
   res.render("pickup");
 });
 
+// Guide
+app.get("/guide", ensureAuthenticated, (req, res) => {
+  res.render("guide");
+});
+
+//About Page
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+
+
+
 app.get("/pickup-search", ensureAuthenticated, (req, res) => {
   const { stn } = req.query;
   if (!stn) return res.json({ success: false });
